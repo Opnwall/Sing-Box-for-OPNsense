@@ -51,11 +51,11 @@
       "domain_strategy": "prefer_ipv4"
     }
   ],
-  "outbounds": 
+  "outbounds": [
 
   .............//补充出站部分的配置。
 
-
+  ],
   "route": {
     "auto_detect_interface": true,
     "rule_set": [
