@@ -1,20 +1,13 @@
-## Clash for OPNsense
-Clash代理安装工具，用于在OPNsense上运行Clash、Tun2socks、Mosdns，以实现代理访问功能。支持Clash订阅转换、透明代理和DNS分流。带Web控制界面，可以进行配置修改、程序控制、日志查看。在OPNsense 25.1.5上测试通过。
+## Sing-Box for OPNsense
+Sing-Box代理安装工具，在OPNsense上运行Sing-Box、Tun2socks，实现代理访问功能。支持透明代理和DNS分流，带Web控制界面，可以进行配置修改、程序控制、日志查看。在OPNsense 25.1.5上测试通过。
 
 ![](images/proxy.png)
 
 ## 项目源代码
 该项目集成了以下工具：
-
-[Mosdns](https://github.com/IrineSistiana/mosdns) 
-
 [sing-box](https://github.com/SagerNet/sing-box) 
 
 [MetaCubeXD](https://github.com/MetaCubeX/metacubexd) 
-
-[Subconverter](https://github.com/tindy2013/subconverter)
-
-[clash (mihomo)](https://github.com/MetaCubeX/mihomo/releases) 
 
 [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
 
@@ -38,13 +31,8 @@ sh install.sh
 
 ## 使用方法
 请参考以下文章：
-[Clash for OPNsense安装配置教程](https://pfchina.org/?p=14148)
+[pfSense、OPNsense配置sing-box代理教程](https://pfchina.org/?p=12933)
 
-## 常见问题
-如果订阅转换不起作用，可以使用[SublinkX](https://github.com/gooaclok819/sublinkX)工具搭建自己的订阅转换平台。
-
-## 参考资料
-- [pfSense、OPNsense配置MosDNS教程](https://pfchina.org/?p=14088)  
-- [pfSense、OPNsense配置Clash代理教程](https://pfchina.org/?p=10526)   
+## 参考资料  
 - [pfSense、OPNsense设置http透明代理教程](https://pfchina.org/?p=13572)  
 - [pfSense、OPNsense配置hev-socks5-tunnel透明代理教程](https://pfchina.org/?p=14551)
