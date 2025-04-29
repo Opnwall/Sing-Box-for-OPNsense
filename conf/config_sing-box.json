@@ -51,10 +51,96 @@
       "domain_strategy": "prefer_ipv4"
     }
   ],
-  "outbounds": [
-
-  .............//补充出站部分的配置。
-
+  "outbounds": [    //请修改outbounds至route之间的这部分配置！
+    {
+      "tag": "select",
+      "type": "selector",
+      "default": "auto",
+      "outbounds": [
+        "auto",
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    {
+      "type": "vmess",
+      "tag": "10",
+      "server": "88.88.88.88",
+      "server_port": 2443,
+      "uuid": "2d1fe982-1323-4023-8322-069408455f32",
+      "security": "auto",
+      "packet_encoding": "packetaddr",
+      "transport": {
+        "type": "ws",
+        "path": "2d1fe982-1323-4023-8322-069408455f32-vm",
+        "headers": {
+          "Host": ["www.bing.com"]
+        }
+      },
+      "tls": {
+        "enabled": false,
+        "server_name": "www.bing.com",
+        "insecure": false,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        }
+      }
+    },
+    {
+      "type": "hysteria2",
+      "tag": "11",
+      "server": "88.88.88.88",
+      "server_port": 3443,
+      "password": "2d1fe982-1323-4023-8322-069408455f32",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.bing.com",
+        "insecure": true,
+        "alpn": ["h3"]
+      }
+    },
+    {
+      "type": "tuic",
+      "tag": "12",
+      "server": "88.88.88.88",
+      "server_port": 4443,
+      "uuid": "2d1fe982-1323-4023-8322-069408455f32",
+      "password": "2d1fe982-1323-4023-8322-069408455f32",
+      "congestion_control": "bbr",
+      "udp_relay_mode": "native",
+      "udp_over_stream": false,
+      "zero_rtt_handshake": false,
+      "heartbeat": "10s",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.bing.com",
+        "insecure": true,
+        "alpn": ["h3"]
+      }
+    },
+    {
+      "tag": "fallback",
+      "type": "direct"
+    },
+    {
+      "tag": "direct",
+      "type": "direct"
+    },
+    {
+      "tag": "auto",
+      "type": "urltest",
+      "outbounds": [
+        "10",
+        "11",
+        "12"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "1m",
+      "tolerance": 50,
+      "interrupt_exist_connections": false
+    }
   ],
   "route": {
     "auto_detect_interface": true,
