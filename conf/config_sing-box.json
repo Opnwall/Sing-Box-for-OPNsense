@@ -51,7 +51,7 @@
       "domain_strategy": "prefer_ipv4"
     }
   ],
-  "outbounds": [    //请修改outbounds至route之间的这部分配置！
+  "outbounds": [               //请根据自己的节点信息替换outbounds至route部分配置。
     {
       "tag": "select",
       "type": "selector",
