@@ -26,4 +26,5 @@ sh install.sh
 
 ## 使用方法
 请参考以下文章：
-[pfSense、OPNsense配置sing-box代理教程](https://pfchina.org/?p=12933)
+
+[pfSense、OPNsense配置sing-box透明代理教程](https://pfchina.org/?p=12933)
