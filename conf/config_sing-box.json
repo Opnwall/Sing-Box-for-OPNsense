@@ -1,7 +1,7 @@
 {
   "log": {
     "disabled": false,
-    "level": "error", 
+    "level": "error",
     "timestamp": true
   },
   "experimental": {
@@ -16,22 +16,24 @@
       "store_fakeip": true
     }
   },
-"dns": {
-  "servers": [
-    {
-      "address": "https://1.1.1.1/dns-query",
-      "tag": "remote"
-    },
-    {
-      "address": "https://223.5.5.5/dns-query",
-      "tag": "local"
-    },
-    {
-      "address": "8.8.8.8",
-      "tag": "fallback"
-    }
-  ]
-},
+  "dns": {
+    "servers": [
+      {
+        "address": "https://1.1.1.1/dns-query",
+        "tag": "remote",
+        "detour": "select"
+      },
+      {
+        "address": "https://223.5.5.5/dns-query",
+        "tag": "local"
+      },
+      {
+        "address": "8.8.8.8",
+        "tag": "fallback",
+        "detour": "select"
+      }
+    ]
+  },
   "inbounds": [
     {
       "tag": "dns-in",
@@ -51,7 +53,7 @@
       "domain_strategy": "prefer_ipv4"
     }
   ],
-  "outbounds": [               //请根据自己的节点信息替换outbounds至route部分配置。
+  "outbounds": [          //请根据自己的节点信息替换outbounds至route部分配置。  
     {
       "tag": "select",
       "type": "selector",
@@ -73,13 +75,13 @@
       "packet_encoding": "packetaddr",
       "transport": {
         "type": "ws",
-        "path": "2d1fe982-1323-4023-8322-069408455f32-vm",
+        "path": "/2d1fe982-1323-4023-8322-069408455f32-vm",
         "headers": {
           "Host": ["www.bing.com"]
         }
       },
       "tls": {
-        "enabled": false,
+        "enabled": true,
         "server_name": "www.bing.com",
         "insecure": false,
         "utls": {
@@ -150,7 +152,7 @@
         "type": "remote",
         "format": "binary",
         "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
-        "download_detour": "direct",
+        "download_detour": "select",
         "update_interval": "1d"
       },
       {
@@ -158,7 +160,7 @@
         "type": "remote",
         "format": "binary",
         "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-cn.srs",
-        "download_detour": "direct",
+        "download_detour": "select",
         "update_interval": "1d"
       },
       {
@@ -166,7 +168,7 @@
         "type": "remote",
         "format": "binary",
         "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
-        "download_detour": "direct",
+        "download_detour": "select",
         "update_interval": "1d"
       }
     ],
@@ -174,8 +176,8 @@
     "rules": [
       {
         "action": "sniff"
-    },
-    {
+      },
+      {
         "protocol": "dns",
         "port": 53,
         "action": "hijack-dns"
@@ -210,6 +212,5 @@
         "outbound": "select"
       }
     ]
-  },
- }
+  }
 }
