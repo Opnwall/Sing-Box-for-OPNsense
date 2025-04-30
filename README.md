@@ -27,7 +27,3 @@ sh install.sh
 ## 使用方法
 请参考以下文章：
 [pfSense、OPNsense配置sing-box代理教程](https://pfchina.org/?p=12933)
-
-## 参考资料  
-- [pfSense、OPNsense设置http透明代理教程](https://pfchina.org/?p=13572)  
-- [pfSense、OPNsense配置hev-socks5-tunnel透明代理教程](https://pfchina.org/?p=14551)
