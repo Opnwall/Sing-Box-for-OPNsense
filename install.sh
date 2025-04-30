@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo -e ''
-echo -e "\033[32m========Sing-Box for OPNsense一键安装脚本=========\033[0m"
+echo -e "\033[32m========Sing-Box for OPNsense 代理全家桶一键安装脚本=========\033[0m"
 echo -e ''
 
 # 定义颜色变量
