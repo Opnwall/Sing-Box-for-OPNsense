@@ -32,7 +32,7 @@ sh install.sh
 
 ```bash
 sh uninstall.sh
-
+```
 ## 使用方法
 请参考以下文章：
 
