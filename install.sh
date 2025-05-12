@@ -36,7 +36,7 @@ log() {
 # 创建目录
 log "$YELLOW" "创建目录..."
 sleep 1
-mkdir -p "$CONF_DIR/sing-box" "$CONF_DIR/sing-box/ui" "$CONF_DIR/tun2socks" || log "$RED" "目录创建失败！"
+mkdir -p "$CONF_DIR/sing-box/ui" "$CONF_DIR/tun2socks" || log "$RED" "目录创建失败！"
 
 # 复制文件
 log "$YELLOW" "复制文件..."
