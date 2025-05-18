@@ -1,5 +1,5 @@
 ## Sing-box for OPNsense
-sing-box安装工具，用于运行Sing-Box、Tun2socks，在OPNsense上实现透明代理功能。支持DNS分流，带Web控制界面，方便进行配置修改、程序控制、日志查看。在OPNsense 25.1.5上测试通过。
+sing-box安装工具，用于运行Sing-Box、Tun2socks，在OPNsense上实现透明代理功能。支持DNS分流，带Web控制界面，方便进行配置修改、程序控制、日志查看。在OPNsense 25.1.6上测试通过。
 
 ![](images/proxy.png)
 
