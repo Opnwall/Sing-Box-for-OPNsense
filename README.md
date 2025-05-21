@@ -4,7 +4,7 @@ sing-box安装工具，运行Sing-Box、在OPNsense上实现透明代理功能�
 ![](images/proxy.png)
 
 ## 项目源代码
-该项目集成源码：
+集成源码：
 
 [魔改Sing-Box](https://github.com/Vincent-Loeng/sing-box) 
 
