@@ -1,5 +1,5 @@
 ## Sing-box for OPNsense
-sing-box安装工具，用于运行Sing-Box、Tun2socks，在OPNsense上实现透明代理功能。支持DNS分流，带Web控制界面，方便进行配置修改、程序控制、日志查看。在OPNsense 25.1.6上测试通过。
+sing-box安装工具，用于运行魔改Sing-Box、在OPNsense上实现透明代理功能。支持DNS分流，带Web控制界面，方便进行配置修改、程序控制、日志查看。在OPNsense 25.1.7上测试通过。
 
 ![](images/proxy.png)
 
@@ -7,11 +7,7 @@ sing-box安装工具，用于运行Sing-Box、Tun2socks，在OPNsense上实现�
 该项目集成了以下工具：
 
 [Sing-Box](https://github.com/SagerNet/sing-box) 
-
-[MetaCubeXD](https://github.com/MetaCubeX/metacubexd) 
-
-[Hev-Socks5-Tunnel](https://github.com/heiher/hev-socks5-tunnel)
-
+[魔改Sing-Box](https://github.com/Vincent-Loeng/sing-box) 
 ## 注意事项
 1. 当前仅支持x86_64 平台。
 2. 脚本不提供任何节点信息，请准备好自己的配置文件。
