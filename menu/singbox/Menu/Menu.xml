@@ -1,0 +1,5 @@
+<menu>
+    <VPN>
+        <singbox VisibleName="Sing-Box" url="/services_sing_box.php" cssClass="fa fa-lock fa-fw"/>
+    </VPN>
+</menu>
