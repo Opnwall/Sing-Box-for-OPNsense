@@ -1,8 +1,0 @@
-<menu>
-    <VPN>
-        <singbox VisibleName="Sing-Box" cssClass="fa fa-lock fa-fw">
-            <sing-box VisibleName="Sing-Box" order="10" url="/services_sing_box.php"/>
-            <tun2socks VisibleName="Tun2Socks" order="20" url="/services_tun2socks.php"/>
-        </singbox>
-    </VPN>
-</menu>
