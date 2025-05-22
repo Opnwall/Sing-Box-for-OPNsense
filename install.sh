@@ -16,7 +16,7 @@ ROOT="/usr/local"
 BIN_DIR="$ROOT/bin"
 WWW_DIR="$ROOT/www"
 CONF_DIR="$ROOT/etc"
-MODELS_DIR="$ROOT/opnsense/mvc/app/models/OPNsense"
+MENU_DIR="$ROOT/opnsense/mvc/app/models/OPNsense"
 RC_DIR="$ROOT/etc/rc.d"
 PLUGINS="$ROOT/etc/inc/plugins.inc.d"
 ACTIONS="$ROOT/opnsense/service/conf/actions.d"
@@ -54,18 +54,13 @@ chmod +x bin/*
 chmod +x rc.d/*
 cp -f bin/* "$BIN_DIR/" || log "$RED" "bin 文件复制失败！"
 cp -f www/* "$WWW_DIR/" || log "$RED" "www 文件复制失败！"
+cp -f rc.d/* "$RC_DIR/" || log "$RED" "rc.d 文件复制失败！"
+cp -R -f menu/* "$MENU_DIR/" || log "$RED" "menu 文件复制失败！"
+cp -f rc.conf/* "$RC_CONF/" || log "$RED" "rc.conf 文件复制失败！"
 cp -f plugins/* "$PLUGINS/" || log "$RED" "plugins 文件复制失败！"
 cp -f actions/* "$ACTIONS/" || log "$RED" "actions 文件复制失败！"
-cp -R -f menu/* "$MODELS_DIR/" || log "$RED" "menu 文件复制失败！"
-# cp -R -f ui/* "$CONF_DIR/sing-box/ui/" || log "$RED" "ui 文件复制失败！"
-cp rc.d/* "$RC_DIR/" || log "$RED" "rc.d 文件复制失败！"
-cp conf/config_sing-box.json "$CONF_DIR/sing-box/config.json" || log "$RED" "sing-box 配置文件复制失败！"
-sleep 1
+cp -f conf/* "$CONF_DIR/sing-box/" || log "$RED" "sing-box 配置文件复制失败！"
 
-# 添加服务启动项
-log "$YELLOW" "配置系统服务..."
-cp -f rc.conf/* "$RC_CONF/" || log "$RED" "rc.conf 文件复制失败！"
-sleep 1
 
 # 启动Tun接口
 log "$YELLOW" "启动sing-box..."
