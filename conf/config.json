@@ -1,0 +1,307 @@
+{
+  "log": {
+    "disabled": false,
+    "level": "info",//为减少日志输出，在正常运行后，修改为warn或error。
+    "timestamp": true
+  },
+  "experimental": {
+    "clash_api": {
+      "external_controller": "0.0.0.0:9090",
+      "external_ui": "/usr/local/etc/sing-box/ui",
+      "external_ui_download_url": "",
+      "external_ui_download_detour": "",
+      "secret": "",
+      "default_mode": "Rule"
+       },
+      "cache_file": {
+            "enabled": true,
+            "path": "/usr/local/etc/sing-box/cache.db"
+        }
+    },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "tun_3000",
+      "address": ["172.19.0.0/30"],
+      "mtu": 9000,
+      "auto_route": false,
+      "strict_route": true,
+      "endpoint_independent_nat": false,
+      "stack": "gvisor", //freebsd只能使用gvisor。
+      "route_exclude_address": [
+        "88.88.88.88/32"]  //vps地址排除。
+    }
+  ],
+  "outbounds": [//替换为自己的出站配置。
+    {
+      "tag": "select",
+      "type": "urltest",
+      "outbounds": ["vless-bw", "vmess-bw", "hy2-bw", "tuic5-bw"],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "1m",
+      "tolerance": 50,
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "vless",
+      "tag": "vless-bw",
+      "server": "88.88.88.88",
+      "server_port": 1443,
+      "uuid": "2d1fe982-1323-4023-8322-069408455f32",
+      "packet_encoding": "xudp",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.yahoo.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "-vP_0BQ-wIqW03tr6Bqy8K5Sy47YfiPOtDlwmpQqlEY",
+          "short_id": "f72a4812"
+        }
+      }
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-bw",
+      "server": "88.88.88.88",
+      "server_port": 2443,
+      "uuid": "2d1fe982-1323-4023-8322-069408455f32",
+      "security": "auto",
+      "packet_encoding": "packetaddr",
+      "transport": {
+        "type": "ws",
+        "path": "2d1fe982-1323-4023-8322-069408455f32-vm",
+        "headers": {
+          "Host": ["www.bing.com"]
+        }
+      },
+      "tls": {
+        "enabled": false,
+        "server_name": "www.bing.com",
+        "insecure": false,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        }
+      }
+    },
+    {
+      "type": "hysteria2",
+      "tag": "hy2-bw",
+      "server": "88.88.88.88",
+      "server_port": 3443,
+      "password": "2d1fe982-1323-4023-8322-069408455f32",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.bing.com",
+        "insecure": true,
+        "alpn": ["h3"]
+      }
+    },
+    {
+      "type": "tuic",
+      "tag": "tuic5-bw",
+      "server": "88.88.88.88",
+      "server_port": 4443,
+      "uuid": "2d1fe982-1323-4023-8322-069408455f32",
+      "password": "2d1fe982-1323-4023-8322-069408455f32",
+      "congestion_control": "bbr",
+      "udp_relay_mode": "native",
+      "udp_over_stream": false,
+      "zero_rtt_handshake": false,
+      "heartbeat": "10s",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.bing.com",
+        "insecure": true,
+        "alpn": ["h3"]
+      }
+    },
+    {
+      "tag": "direct",
+      "type": "direct"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "action": "sniff",
+        "inbound": "tun-in",
+        "sniffer": [
+          "dns",
+          "http",
+          "tls",
+          "quic"
+        ]
+      },
+      {
+        "action": "hijack-dns",
+        "protocol": "dns"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoSite-Private"
+        ],
+        "outbound": "direct"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoIP-Private"
+        ],
+        "outbound": "direct"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoSite-CN"
+        ],
+        "outbound": "direct"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoIP-CN"
+        ],
+        "outbound": "direct"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoLocation-!CN"
+        ],
+        "outbound": "select"
+      },
+      {
+        "action": "route",
+        "clash_mode": "direct",
+        "outbound": "direct"
+      },
+      {
+        "action": "route",
+        "clash_mode": "global",
+        "outbound": "GLOBAL"
+      },
+      {
+        "action": "reject",
+        "protocol": "quic"
+      },
+      {
+        "action": "reject",
+        "rule_set": [
+          "Category-Ads"
+        ]
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": "Category-Ads",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ads-all.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "GeoIP-Private",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/private.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "GeoSite-Private",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "GeoIP-CN",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "GeoSite-CN",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "GeoLocation-!CN",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      }
+    ],
+    "auto_detect_interface": true,
+    "final": "select"
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "Local-DNS",
+        "address": "https://223.5.5.5:443/dns-query",
+        "address_resolver": "Local-DNS-Resolver",
+        "detour": "direct"
+      },
+      {
+        "tag": "Local-DNS-Resolver",
+        "address": "udp://223.5.5.5:53",
+        "detour": "direct"
+      },
+      {
+        "tag": "Remote-DNS",
+        "address": "tls://8.8.8.8:853",
+        "address_resolver": "Remote-DNS-Resolver",
+        "detour": "select"
+      },
+      {
+        "tag": "Remote-DNS-Resolver",
+        "address": "udp://8.8.8.8:53",
+        "detour": "select"
+      }
+    ],
+    "rules": [
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoSite-CN"
+        ],
+        "server": "Local-DNS"
+      },
+      {
+        "action": "route",
+        "rule_set": [
+          "GeoLocation-!CN"
+        ],
+        "server": "Remote-DNS"
+      },
+      {
+        "action": "route",
+        "clash_mode": "direct",
+        "server": "Local-DNS"
+      },
+      {
+        "action": "route",
+        "clash_mode": "global",
+        "server": "Remote-DNS"
+      },
+      {
+        "action": "route",
+        "server": "Local-DNS",
+        "outbound": "any"
+      }
+    ],
+    "final": "Remote-DNS"
+  }
+}
