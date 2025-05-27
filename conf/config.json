@@ -28,7 +28,7 @@
       "auto_route": false,
       "strict_route": true,
       "endpoint_independent_nat": false,
-      "stack": "gvisor", //freebsd只能使用gvisor。
+      "stack": "gvisor", //freebsd只能使用gvisor选项。
       "route_exclude_address": [
         "88.88.88.88/32"]  //vps地址排除。
     }
