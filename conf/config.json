@@ -243,7 +243,7 @@
         "download_detour": "direct"
       }
     ],
-    "auto_detect_interface": true,
+    "auto_detect_interface": flase,//新版本只能使用flase选项
     "final": "select"
   },
   "dns": {
