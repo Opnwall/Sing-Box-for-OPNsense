@@ -4,7 +4,7 @@ sing-box安装工具，运行Sing-Box、在OPNsense上实现透明代理功能�
 ![](images/proxy.png)
 
 ## 程序版本
-[Vincent-Loeng的魔改Sing-Box](https://github.com/Vincent-Loeng/sing-box) 
+[Vincent-Loeng大佬魔改Sing-Box](https://github.com/Vincent-Loeng/sing-box) 
 
 ## 注意事项
 1. 当前仅支持x86_64 平台。
