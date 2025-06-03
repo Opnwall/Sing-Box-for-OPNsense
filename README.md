@@ -26,6 +26,6 @@ sh install.sh
 ```bash
 sh uninstall.sh
 ```
-## 使用方法
+## 配置教程
 
 [OPNsense 配置 sing-box 透明代理教程](https://pfchina.org/?p=12933)
