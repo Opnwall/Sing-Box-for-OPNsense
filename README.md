@@ -14,21 +14,18 @@ sing-box安装工具，运行Sing-Box、在OPNsense上实现透明代理功能�
 5. 由于sing-box不同版本的配置有差异，已发布Release的配置文件只针对安装程序的版本。
 6. 为减少长期运行保存的日志数量，在调试完成后，请将所有配置的日志类型修改为error或warn。
 
-## 安装方法
-下载后解压，上传到防火墙根目录，进入安装目录，运行以下命令安装：
+## 安装命令
 
 ```bash
 sh install.sh
 ```
 ![](images/install.png)
 
-## 卸载方法
-运行以下命令卸载安装：
+## 卸载命令
 
 ```bash
 sh uninstall.sh
 ```
 ## 使用方法
-请参考以下文章：
 
-[pfSense、OPNsense配置sing-box透明代理教程](https://pfchina.org/?p=12933)
+[OPNsense 配置 sing-box 透明代理教程](https://pfchina.org/?p=12933)
