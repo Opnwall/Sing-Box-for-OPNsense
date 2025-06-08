@@ -74,31 +74,102 @@ cp "$CONFIG_FILE" "$BACKUP_FILE" || {
   exit 1
 }
 
-# 添加防火墙规则
+# 添加tun接口
+log "$YELLOW" "添加 tun_3000 接口..."
+sleep 1
+if grep -q "<if>tun_3000</if>" "$CONFIG_FILE"; then
+  echo "存在同名接口，忽略"
+else
+  awk '
+  BEGIN { inserted = 0 }
+  {
+    print
+    if ($0 ~ /<\/lo0>/ && inserted == 0) {
+      print "    <opt10>"
+      print "      <enable>1</enable>"
+      print "      <lock>1</lock>"
+      print "      <descr>TUN</descr>"
+      print "      <if>tun_3000</if>"
+      print "      <ipaddr>172.19.0.2</ipaddr>"
+      print "      <subnet>30</subnet>"
+      print "      <gateway>TUN_GW</gateway>"
+      print "    </opt10>"
+      inserted = 1
+    }
+  }
+  ' "$CONFIG_FILE" > "$TMP_FILE" && mv "$TMP_FILE" "$CONFIG_FILE"
+  echo "接口添加完成"
+fi
+echo ""
+
+# 添加tun网关
+log "$YELLOW" "添加 TUN_GW 网关..."
+sleep 1
+if grep -q "<name>TUN_GW</name>" "$CONFIG_FILE"; then
+  echo "存在同名网关，忽略"
+else
+  awk '
+  BEGIN { inserted = 0 }
+  /<Gateways>/ {
+    print
+    next
+  }
+  /<\/Gateways>/ && inserted == 0 {
+    print "      <gateway_item uuid=\"6639b95f-ee46-423c-b9ab-f042653cd41b\">"
+    print "        <interface>opt10</interface>"
+    print "        <gateway>172.19.0.1</gateway>"
+    print "        <name>TUN_GW</name>"
+    print "        <ipprotocol>inet</ipprotocol>"
+    print "        <descr></descr>"
+    print "        <defaultgw>0</defaultgw>"
+    print "        <monitor_disable>1</monitor_disable>"
+    print "        <disabled>0</disabled>"
+    print "      </gateway_item>"
+    inserted = 1
+  }
+  { print }
+  ' "$CONFIG_FILE" > "$TMP_FILE" && mv "$TMP_FILE" "$CONFIG_FILE"
+  echo "网关添加完成"
+fi
+echo ""
+
+# 添加防火墙规则（将流量导入TUN_GW）
 log "$YELLOW" "添加分流规则..."
-RULE_UUID="75588d32-4930-4295-8d70-a19464be233b"
-if grep -q "$RULE_UUID" "$CONFIG_FILE"; then
+if grep -q "c0398153-597b-403b-9069-734734b46497" "$CONFIG_FILE"; then
   echo "存在同名规则，忽略"
   echo ""
 else
-  awk -v rule_uuid="$RULE_UUID" '
+  awk '
   /<filter>/ {
     print
-    print "    <rule uuid=\"" rule_uuid "\">"
+    print "    <rule uuid=\"c0398153-597b-403b-9069-734734b46497\">"
     print "      <type>pass</type>"
     print "      <interface>lan</interface>"
     print "      <ipprotocol>inet</ipprotocol>"
     print "      <statetype>keep state</statetype>"
-    print "      <direction>any</direction>"
-    print "      <interfacenot>1</interfacenot>"
+    print "      <gateway>TUN_GW</gateway>"
+    print "      <direction>in</direction>"
     print "      <floating>yes</floating>"
     print "      <quick>1</quick>"
-    print "      <protocol>tcp/udp</protocol>"
     print "      <source>"
-    print "        <address>172.19.0.0/30</address>"
+    print "        <network>lan</network>"
     print "      </source>"
     print "      <destination>"
-    print "        <address>172.19.0.0/30</address>"
+    print "        <any>1</any>"
+    print "      </destination>"
+    print "    </rule>"
+    print "    <rule uuid=\"af644e95-89a5-45a3-86c3-959f406a2a6a\">"
+    print "      <type>pass</type>"
+    print "      <interface>opt10</interface>"
+    print "      <ipprotocol>inet</ipprotocol>"
+    print "      <statetype>keep state</statetype>"
+    print "      <direction>in</direction>"
+    print "      <quick>1</quick>"
+    print "      <source>"
+    print "        <any>1</any>"
+    print "      </source>"
+    print "      <destination>"
+    print "        <any>1</any>"
     print "      </destination>"
     print "    </rule>"
     next
@@ -109,7 +180,7 @@ else
 fi
   echo ""
 
-# 重启所有服务
+# 重启防火墙
 log "$YELLOW" "重启防火墙..."
 /usr/local/etc/rc.filter_configure >/dev/null 2>&1
 echo "重启完成！"
