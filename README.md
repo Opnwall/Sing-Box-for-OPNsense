@@ -1,5 +1,5 @@
 ## Sing-box for OPNsense
-sing-box安装工具，运行Sing-Box、在OPNsense上实现透明代理功能。支持DNS分流，带Web控制界面，可以进行配置修改、程序控制、日志查看。在OPNsense 25.1.7上测试通过。
+sing-box安装工具，在OPNsense上实现透明代理功能。在OPNsense 25.1.8上测试通过。
 
 ![](images/proxy.png)
 
