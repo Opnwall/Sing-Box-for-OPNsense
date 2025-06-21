@@ -59,12 +59,23 @@ cp -R -f menu/* "$MENU_DIR/" || log "$RED" "menu 文件复制失败！"
 cp -f rc.conf/* "$RC_CONF/" || log "$RED" "rc.conf 文件复制失败！"
 cp -f plugins/* "$PLUGINS/" || log "$RED" "plugins 文件复制失败！"
 cp -f actions/* "$ACTIONS/" || log "$RED" "actions 文件复制失败！"
-cp -f conf/* "$CONF_DIR/sing-box/" || log "$RED" "sing-box 配置文件复制失败！"
+cp -R -f conf/* "$CONF_DIR/sing-box/" || log "$RED" "sing-box 配置文件复制失败！"
 
+# 新建订阅程序
+log "$YELLOW" "添加订阅..."
+if [ -f /usr/local/etc/sing-box/sub/sub.sh ]; then
+  cat >/usr/bin/sub <<EOF
+#!/bin/sh
+bash /usr/local/etc/sing-box/sub/sub.sh
+EOF
+chmod +x /usr/bin/sub
+else
+  log "$RED" "订阅脚本sub.sh 不存在，跳过创建 /usr/bin/sub"
+fi
 
 # 启动Tun接口
 log "$YELLOW" "启动sing-box..."
-service singbox start > /dev/null 2>&1
+service sing-box restart > /dev/null 2>&1
 echo ""
 
 # 备份配置文件
@@ -78,7 +89,7 @@ cp "$CONFIG_FILE" "$BACKUP_FILE" || {
 log "$YELLOW" "添加 tun_3000 接口..."
 sleep 1
 if grep -q "<if>tun_3000</if>" "$CONFIG_FILE"; then
-  echo "存在同名接口，忽略"
+  log "$CYAN" "存在同名接口，忽略"
 else
   awk '
   BEGIN { inserted = 0 }
@@ -106,7 +117,7 @@ echo ""
 log "$YELLOW" "添加 TUN_GW 网关..."
 sleep 1
 if grep -q "<name>TUN_GW</name>" "$CONFIG_FILE"; then
-  echo "存在同名网关，忽略"
+  log "$CYAN" "存在同名网关，忽略"
 else
   awk '
   BEGIN { inserted = 0 }
@@ -136,7 +147,7 @@ echo ""
 # 添加防火墙规则（将流量导入TUN_GW）
 log "$YELLOW" "添加分流规则..."
 if grep -q "c0398153-597b-403b-9069-734734b46497" "$CONFIG_FILE"; then
-  echo "存在同名规则，忽略"
+  log "$CYAN" "存在同名规则，忽略"
   echo ""
 else
   awk '
@@ -180,12 +191,77 @@ else
 fi
   echo ""
 
-# 重启防火墙
-log "$YELLOW" "重启防火墙..."
-/usr/local/etc/rc.filter_configure >/dev/null 2>&1
-echo "重启完成！"
+# 添加自动订阅任务
+log "$YELLOW" "添加订阅更新任务..."
+
+JOB_FILE="/tmp/job_insert.xml"
+cat > "$JOB_FILE" <<EOF
+        <job uuid="388fcf06-888e-4781-b8f9-95142ce3c71c">
+          <origin>cron</origin>
+          <enabled>1</enabled>
+          <minutes>0</minutes>
+          <hours>3</hours>
+          <days>6</days>
+          <months>*</months>
+          <weekdays>*</weekdays>
+          <who>root</who>
+          <command>sing-box sub-update</command>
+          <parameters/>
+          <description>sing-box update sub</description>
+        </job>
+EOF
+
+insert_job_if_missing() {
+  CMD="$1"
+  JOB_FILE="$2"
+
+  if grep -q "<command>$CMD</command>" "$CONFIG_FILE"; then
+    return
+  fi
+
+  if grep -q "<jobs/>" "$CONFIG_FILE"; then
+    awk -v jobfile="$JOB_FILE" '
+      /<jobs\/>/ {
+        print "<jobs>"
+        while ((getline line < jobfile) > 0) print line
+        print "</jobs>"
+        next
+      }
+      { print }
+    ' "$CONFIG_FILE" > "$TMP_FILE" && mv "$TMP_FILE" "$CONFIG_FILE"
+
+  elif grep -q "<jobs>" "$CONFIG_FILE"; then
+    awk -v jobfile="$JOB_FILE" '
+      /<\/jobs>/ {
+        while ((getline line < jobfile) > 0) print line
+      }
+      { print }
+    ' "$CONFIG_FILE" > "$TMP_FILE" && mv "$TMP_FILE" "$CONFIG_FILE"
+
+  else
+    echo "错误：未找到 <jobs> 或 <jobs/> 标签，无法插入任务。" >&2
+  fi
+}
+
+insert_job_if_missing "sing-box sub-update" "$JOB_FILE"
+rm -f "$JOB_FILE"
+echo ""
+
+# 重载 cron 服务
+log "$YELLOW" "重启cron服务..."
+/usr/local/sbin/configctl cron restart > /dev/null 2>&1
+echo ""
+
+# 重新载入configd
+log "$YELLOW" "重新载入configd..."
+service configd restart > /dev/null 2>&1
+echo ""
+
+# 重新载入防火墙规则
+log "$YELLOW" "重新载入防火墙规则..."
+configctl filter reload > /dev/null 2>&1
 echo ""
 
 # 完成提示
-log "$GREEN" "安装完毕，请刷新浏览器，导航到VPN > Sing-Box 菜单进行配置。"
+log "$GREEN" "安装完毕，请刷新浏览器，导航到VPN > Proxy Suite 进行配置。配置完成，请重启防火墙让新配置生效。"
 echo ""

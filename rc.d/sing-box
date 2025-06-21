@@ -1,0 +1,62 @@
+#!/bin/sh
+
+# PROVIDE: sing_box
+# REQUIRE: NETWORKING
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="sing_box"
+rcvar="sing_box_enable"
+
+pidfile="/var/run/sing-box.pid"
+logfile="/var/log/sing-box.log"
+command="/usr/local/bin/sing-box"
+config="/usr/local/etc/sing-box/config.json"
+
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+status_cmd="${name}_status"
+
+load_rc_config $name
+: ${sing_box_enable:=no}
+
+sing_box_start() {
+    echo "Starting sing-box..."
+    if [ -f "$pidfile" ] && kill -0 "$(cat $pidfile)" 2>/dev/null; then
+        echo "sing-box is already running."
+        return 1
+    fi
+
+    nohup ${command} run -c ${config} >> ${logfile} 2>&1 & echo $! > ${pidfile}
+    echo $! > ${pidfile}
+    echo "Started with PID $(cat $pidfile)"
+}
+
+sing_box_stop() {
+    echo "Stopping sing-box..."
+    if [ -f "$pidfile" ]; then
+        kill "$(cat $pidfile)" && rm -f "$pidfile"
+        echo "Stopped."
+    else
+        echo "sing-box is not running (no pidfile)."
+    fi
+}
+
+sing_box_status() {
+    if [ -f "$pidfile" ]; then
+        pid=$(cat "$pidfile")
+        if kill -0 "$pid" 2>/dev/null; then
+            echo "sing-box is running as PID $pid."
+            return 0
+        else
+            echo "PID file found but process not running."
+            return 1
+        fi
+    else
+        echo "sing-box is not running."
+        return 1
+    fi
+}
+
+run_rc_command "$1"

@@ -150,6 +150,10 @@
     }
   ],
   "route": {
+     "default_domain_resolver": {
+      "server": "Local-DNS",
+      "rewrite_ttl": 60
+    },
     "rules": [
       {
         "action": "sniff",
@@ -208,7 +212,7 @@
       {
         "action": "route",
         "clash_mode": "global",
-        "outbound": "GLOBAL"
+        "outbound": "select"
       },
       {
         "action": "reject",
@@ -219,6 +223,16 @@
         "rule_set": [
           "Category-Ads"
         ]
+      },
+      {
+        "action": "route",
+        "ip_cidr": [
+          "127.0.0.1/32",
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16"
+        ],
+        "outbound": "direct"
       }
     ],
     "rule_set": [
@@ -265,19 +279,33 @@
         "download_detour": "direct"
       }
     ],
-    "auto_detect_interface": false,//必须设置为false。
+    "auto_detect_interface": false,
     "final": "select"
   },
   "dns": {
     "servers": [
       {
         "tag": "Local-DNS",
-        "address": "https://223.5.5.5/dns-query",
-        "detour": "direct"
+        "type": "https",
+        "server": "dns.alidns.com",
+        "domain_resolver": "alidns"
+      },
+      {
+        "tag": "alidns", 
+        "type": "udp",
+        "server": "223.5.5.5"
       },
       {
         "tag": "Remote-DNS",
-        "address": "https://dns.google/dns-query",
+        "type": "https",
+        "server": "dns.google",
+        "domain_resolver": "google",
+        "detour": "select"
+      },
+      {
+        "tag": "google",
+        "type": "tls",
+        "server": "8.8.8.8",
         "detour": "select"
       }
     ],
@@ -305,11 +333,6 @@
         "action": "route",
         "clash_mode": "global",
         "server": "Remote-DNS"
-      },
-      {
-        "action": "route",
-        "server": "Local-DNS",
-        "outbound": "any"
       }
     ],
     "final": "Remote-DNS"

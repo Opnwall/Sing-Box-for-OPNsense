@@ -1,0 +1,8 @@
+<menu>
+    <VPN>
+        <Magic VisibleName="Proxy Suite" cssClass="fa fa-lock fa-fw">
+            <sing-box VisibleName="Sing-Box" order="10" url="/services_sing_box.php"/>
+            <sub VisibleName="Subscribe" order="30" url="/services_sub.php"/>
+        </Magic>
+    </VPN>
+</menu>

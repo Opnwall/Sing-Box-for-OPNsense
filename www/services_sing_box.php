@@ -28,7 +28,7 @@ function handleServiceAction($action) {
         file_put_contents("/var/log/sing-box.log", "");
     }
 
-    list($output, $return_var) = execCommand("service singbox " . escapeshellarg($action));
+    list($output, $return_var) = execCommand("service sing-box " . escapeshellarg($action));
 
     $messages = [
         'start' => ["sing-box服务启动成功！", "sing-box服务启动失败！"],
